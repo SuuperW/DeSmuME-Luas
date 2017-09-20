@@ -1,12 +1,15 @@
-local displayAllCoins = true;
+local displayCoinList = true;
+local beginListAtCoin = 0;
 local displayNearestCoin = true;
 
-local coinArrayPointer = 0x021A7884;
-local coinArrayOffset = 0x2C;
-local coinArrayLengthOffset = 0x14;
-local firstCoinOffset = 0x38;
+local objectArrayPointer = 0x021A7884;
+local objectArrayOffset = 0x2C;
+local oaCoinCountOffset = 0x14;
 
-local coinStructureLength = 0x114;
+local coinDataLength = 0x104;
+
+local objectDataLengthOffset = 0x4;
+local objectNextOffset = 0xC;
 local coinXOffset = 0x14;
 local coinYOffset = 0x18;
 local coinZOffset = 0x1C;
@@ -18,17 +21,24 @@ local playerYOffset = 0x84;
 local playerZOffset = 0x88;
 
 function displayCoins()
-	local address = memory.readdword(coinArrayPointer) + coinArrayOffset;
-	local coinCount = memory.readdword(address + coinArrayLengthOffset);
+	local address = memory.readdword(objectArrayPointer) + objectArrayOffset;
+	local coinCount = memory.readdword(address + oaCoinCountOffset);
 	if (coinCount > 50) then
 		return;
 	end
-	
-	address = address + firstCoinOffset;
 	gui.text(4, 2, "Coins: " .. coinCount);
 	
 	local nearestCoin = {dist = 999999999, id = -1};
+	local renderY = 20;
 	for i = 0, coinCount - 1, 1 do
+		address = memory.readdword(address + objectNextOffset);
+		local loopCount = 0;
+		while (memory.readdword(address + objectDataLengthOffset) ~= coinDataLength) do
+			address = memory.readdword(address + objectNextOffset);
+			loopCount = loopCount + 1;
+			if (loopCount > 20) then gui.text(80, 2, "fail " .. i); return; end
+		end
+
 		local coinX = memory.readdwordsigned(address + coinXOffset);
 		local coinY = memory.readdwordsigned(address + coinYOffset);
 		local coinZ = memory.readdwordsigned(address + coinZOffset);
@@ -61,11 +71,10 @@ function displayCoins()
 			end
 		end
 		
-		if (displayAllCoins) then
-			gui.text(4, 20 + i * 12, displayString);
+		if (displayCoinList and beginListAtCoin <= i and renderY < 150) then
+			gui.text(4, renderY, displayString);
+			renderY = renderY + 12;
 		end
-		
-		address = address + coinStructureLength;
 	end
 	
 	if (displayNearestCoin and nearestCoin.id ~= -1) then

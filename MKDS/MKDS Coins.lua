@@ -1,4 +1,4 @@
-local displayCoinList = true;
+local displayCoinList = false;
 local beginListAtCoin = 0;
 local displayNearestCoin = true;
 
@@ -16,9 +16,9 @@ local coinZOffset = 0x1C;
 local coinCollectedOffset = 0x12;
 
 local playerDataPointer = 0x0217ACF8;
-local playerXOffset = 0x80;
-local playerYOffset = 0x84;
-local playerZOffset = 0x88;
+local playerXOffset = 0x1B8;
+local playerYOffset = 0x1BC;
+local playerZOffset = 0x1C0;
 
 function displayCoins()
 	local address = memory.readdword(objectArrayPointer) + objectArrayOffset;
@@ -64,6 +64,7 @@ function displayCoins()
 			coinDistance.z = playerZ - coinZ;
 			coinDistance.dist = math.sqrt(coinDistance.x ^ 2 +
 			  coinDistance.y ^ 2 + coinDistance.z ^ 2);
+			coinDistance.dist = coinDistance.dist - 81920; -- 20 units, radius of coin
 			coinDistance.dist = math.floor(coinDistance.dist * 10) / 10;
 			if (coinDistance.dist < nearestCoin.dist) then
 				nearestCoin = coinDistance;
@@ -71,6 +72,8 @@ function displayCoins()
 			end
 		end
 		
+		--displayString = displayString .. ", " ..
+		--  string.format("%x", address + 0x12e3fe0);
 		if (displayCoinList and beginListAtCoin <= i and renderY < 150) then
 			gui.text(4, renderY, displayString);
 			renderY = renderY + 12;
@@ -79,9 +82,10 @@ function displayCoins()
 	
 	if (displayNearestCoin and nearestCoin.id ~= -1) then
 		gui.text(4, 158, "-- Nearest coin --");
-		gui.text(4, 170, "ID: " .. nearestCoin.id .. ", Distance: " .. nearestCoin.dist);
+		gui.text(4, 170, "ID: " .. nearestCoin.id .. ", " ..
+		  "Distance : " .. nearestCoin.dist .. " to collect");
 		gui.text(4, 182, "XYZ dist: " .. nearestCoin.x .. ", " .. 
-		  nearestCoin.y .. " " .. nearestCoin.z);
+		  nearestCoin.y .. ", " .. nearestCoin.z);
 	end
 end
 

@@ -82,8 +82,11 @@ function displayCoins()
 	
 	if (displayNearestCoin and nearestCoin.id ~= -1) then
 		gui.text(4, 158, "-- Nearest coin --");
+		if (not string.find(nearestCoin.dist, "%.")) then
+			nearestCoin.dist = nearestCoin.dist .. ".0";
+		end
 		gui.text(4, 170, "ID: " .. nearestCoin.id .. ", " ..
-		  "Distance : " .. nearestCoin.dist .. " to collect");
+		  "Distance: " .. nearestCoin.dist .. " to collect");
 		gui.text(4, 182, "XYZ dist: " .. nearestCoin.x .. ", " .. 
 		  nearestCoin.y .. ", " .. nearestCoin.z);
 	end

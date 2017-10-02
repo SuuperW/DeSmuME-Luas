@@ -52,8 +52,9 @@ function fn()
    chkAddr = memory.readdword(pntCheckData + 0x44)
    
    -- Default value of this address is 134, for which zoomFactor should be 24,000.
-   zoomFactor = 134 / memory.readdword(0x22C7F10);
-   zoomFactor = zoomFactor * 24000;
+    local zoomAddress = memory.readdword(0x217B330) + 0x854;
+    zoomFactor = 134 / memory.readdword(zoomAddress);
+    zoomFactor = zoomFactor * 24000;
    
     local currentInput = input.get();
     if (currentInput.T and not lastInput.T) then

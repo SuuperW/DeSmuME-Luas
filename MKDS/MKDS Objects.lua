@@ -18,6 +18,62 @@ local playerXOffset = 0x1B8;
 local playerYOffset = 0x1BC;
 local playerZOffset = 0x1C0;
 
+local objectTypes = { };
+objectTypes[0x000b] = "STOP! signage";
+objectTypes[0x000d] = "puddle";
+objectTypes[0x0065] = "item box";
+objectTypes[0x0066] = "post";
+objectTypes[0x0067] = "wooden crate";
+objectTypes[0x0068] = "coin";
+objectTypes[0x006e] = "gate trigger";
+objectTypes[0x00c9] = "moving item box";
+objectTypes[0x00cd] = "clock";
+objectTypes[0x00cf] = "pendulumn";
+objectTypes[0x012e] = "coconut tree";
+objectTypes[0x012f] = "pipe";
+objectTypes[0x0130] = "wumpa-fruit tree";
+objectTypes[0x0138] = "striped tree";
+objectTypes[0x0145] = "autumn tree";
+objectTypes[0x0146] = "winter tree";
+objectTypes[0x0148] = "palm tree";
+objectTypes[0x014f] = "pinecone tree";
+objectTypes[0x0150] = "beanstalk";
+objectTypes[0x0156] = "N64 winter tree";
+objectTypes[0x0191] = "goomba";
+objectTypes[0x0192] = "giant snowball";
+objectTypes[0x0193] = "thwomp";
+objectTypes[0x0195] = "bus";
+objectTypes[0x0196] = "chain chomp";
+objectTypes[0x0197] = "chain chomp post";
+objectTypes[0x0198] = "leaping fireball";
+objectTypes[0x0199] = "mole";
+objectTypes[0x019a] = "car";
+objectTypes[0x019b] = "cheep cheep";
+objectTypes[0x019c] = "truck";
+objectTypes[0x019d] = "snowman";
+objectTypes[0x019e] = "coffin";
+objectTypes[0x019f] = "bats";
+objectTypes[0x01a2] = "bullet bill";
+objectTypes[0x01a3] = "walking tree";
+objectTypes[0x01a4] = "flamethrower";
+objectTypes[0x01a5] = "stray chain chomp";
+objectTypes[0x01ac] = "crab";
+objectTypes[0x01a6] = "pirahna plant";
+objectTypes[0x01a7] = "rocky wrench";
+objectTypes[0x01a8] = "bumper";
+objectTypes[0x01a9] = "flipper";
+objectTypes[0x01af] = "fireballs";
+objectTypes[0x01b0] = "pinball";
+objectTypes[0x01b1] = "boulder";
+objectTypes[0x01b2] = "pokey";
+objectTypes[0x01f5] = "bully";
+objectTypes[0x01f6] = "Chief Chilly";
+objectTypes[0x01f8] = "King Bomb-omb";
+objectTypes[0x01fb] = "Eyerock";
+objectTypes[0x01fd] = "King Boo";
+objectTypes[0x01fe] = "Wiggler";
+
+
 function displayItemBoxes()
 	local address = memory.readdword(objectArrayPointer) + firstObjectOffset;
 	local itemBoxCount = 0;
@@ -57,7 +113,7 @@ function displayItemBoxes()
 			local ibSize = memory.readdword(objectDetailsAddress + objectSizeOffset) + 32768;
 			objectDistance.dist = objectDistance.dist - ibSize;
 			objectDistance.dist = math.floor(objectDistance.dist * 10) / 10;
-			if (objectDistance.dist < nearestObject.dist) then -- and objectDistance.dist > -100000) then
+			if (objectDistance.dist < nearestObject.dist) then
 				local objType = memory.readword(objectDetailsAddress);
 				if (objType ~= 0) then
 					nearestObject = objectDistance;
@@ -80,116 +136,11 @@ function displayItemBoxes()
 	end -- do while
 	
 	if (displayNearestObject and nearestObject.id ~= -1) then
-		local objectType = "0x" .. string.format("%x", nearestObject.type);
-		if (nearestObject.type == 0x0068) then
-			objectType = "coin";
-		elseif (nearestObject.type == 0x0130) then
-			objectType = "wumpa-fruit tree";
-		elseif (nearestObject.type == 0x0065) then
-			objectType = "item box";
-		elseif (nearestObject.type == 0x006e) then
-			objectType = "gate trigger";
-		elseif (nearestObject.type == 0x0066) then
-			objectType = "post";
-		elseif (nearestObject.type == 0x019b) then
-			objectType = "cheep cheep";
-		elseif (nearestObject.type == 0x012e) then
-			objectType = "coconut tree";
-		elseif (nearestObject.type == 0x012f) then
-			objectType = "pipe";
-		elseif (nearestObject.type == 0x0199) then
-			objectType = "mole";
-		elseif (nearestObject.type == 0x000b) then
-			objectType = "STOP! signage";
-		elseif (nearestObject.type == 0x01b2) then
-			objectType = "pokey";
-		elseif (nearestObject.type == 0x0148) then
-			objectType = "palm tree";
-		elseif (nearestObject.type == 0x00c9) then
-			objectType = "moving item box";
-		elseif (nearestObject.type == 0x0067) then
-			objectType = "wooden crate";
-		elseif (nearestObject.type == 0x0145) then
-			objectType = "autumn tree";
-		elseif (nearestObject.type == 0x01f5) then
-			objectType = "bully";
-		elseif (nearestObject.type == 0x01fb) then
-			objectType = "Eyerock";
-		elseif (nearestObject.type == 0x0196) then
-			objectType = "chain chomp";
-		elseif (nearestObject.type == 0x0197) then
-			objectType = "chain chomp post";
-		elseif (nearestObject.type == 0x0191) then
-			objectType = "goomba";
-		elseif (nearestObject.type == 0x019d) then
-			objectType = "snowman";
-		elseif (nearestObject.type == 0x0192) then
-			objectType = "giant snowball";
-		elseif (nearestObject.type == 0x01ac) then
-			objectType = "crab";
-		elseif (nearestObject.type == 0x019a) then
-			objectType = "car";
-		elseif (nearestObject.type == 0x019a) then
-			objectType = "car";
-		elseif (nearestObject.type == 0x019c) then
-			objectType = "truck";
-		elseif (nearestObject.type == 0x0195) then
-			objectType = "bus";
-		elseif (nearestObject.type == 0x0193) then
-			objectType = "thwomp";
-		elseif (nearestObject.type == 0x01b1) then
-			objectType = "boulder";
-		elseif (nearestObject.type == 0x01a8) then
-			objectType = "bumper";
-		elseif (nearestObject.type == 0x01b0) then
-			objectType = "pinball";
-		elseif (nearestObject.type == 0x01a9) then
-			objectType = "flipper";
-		elseif (nearestObject.type == 0x01fd) then
-			objectType = "King Boo";
-		elseif (nearestObject.type == 0x01a5) then
-			objectType = "stray chain chomp";
-		elseif (nearestObject.type == 0x0138) then
-			objectType = "striped tree";
-		elseif (nearestObject.type == 0x01f8) then
-			objectType = "King Bomb-omb";
-		elseif (nearestObject.type == 0x01a7) then
-			objectType = "rocky wrench";
-		elseif (nearestObject.type == 0x01f6) then
-			objectType = "Chief Chilly";
-		elseif (nearestObject.type == 0x01a4) then
-			objectType = "flamethrower";
-		elseif (nearestObject.type == 0x01fe) then
-			objectType = "Wiggler";
-		elseif (nearestObject.type == 0x01a3) then
-			objectType = "walking tree";
-		elseif (nearestObject.type == 0x0156) then
-			objectType = "N64 winter tree";
-		elseif (nearestObject.type == 0x0198) then
-			objectType = "leaping fireball";
-		elseif (nearestObject.type == 0x01af) then
-			objectType = "fireballs";
-		elseif (nearestObject.type == 0x0146) then
-			objectType = "winter tree";
-		elseif (nearestObject.type == 0x00cd) then
-			objectType = "clock";
-		elseif (nearestObject.type == 0x00cf) then
-			objectType = "pendulum";
-		elseif (nearestObject.type == 0x01a2) then
-			objectType = "bullet bill";
-		elseif (nearestObject.type == 0x014f) then
-			objectType = "pinecone tree";
-		elseif (nearestObject.type == 0x000d) then
-			objectType = "puddle";
-		elseif (nearestObject.type == 0x01a6) then
-			objectType = "pirahna plant";
-		elseif (nearestObject.type == 0x019e) then
-			objectType = "coffin";
-		elseif (nearestObject.type == 0x019f) then
-			objectType = "bats";
-		elseif (nearestObject.type == 0x0150) then
-			objectType = "beanstalk";
+		local objectType = objectTypes[nearestObject.type];
+		if (objectType == nil) then
+			objectType = "0x" .. string.format("%x", nearestObject.type);
 		end
+		
 		gui.text(4, 158, "-- Nearest object (" .. objectType .. ") --");
 		if (not string.find(nearestObject.dist, "%.")) then
 			nearestObject.dist = nearestObject.dist .. ".0";
